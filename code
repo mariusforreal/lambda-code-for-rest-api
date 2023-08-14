@@ -1,0 +1,31 @@
+import boto3
+import json
+
+s3 = boto3.client('s3')
+
+def lambda_handler(event, context):
+    try:
+        # Retrieve the JSON file from S3
+        bucket_name = 'devops-00237'
+        file_name = 'foo.json'
+        
+        response = s3.get_object(Bucket=bucket_name, Key=file_name)
+        content = response['Body'].read().decode('utf-8')
+        json_content = json.loads(content)
+        
+        # Return the JSON content as a response
+        return {
+            'statusCode': 200,
+            'body': json.dumps(json_content),
+            'headers': {
+                'Content-Type': 'application/json'
+            }
+        }
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({'error': str(e)}),
+            'headers': {
+                'Content-Type': 'application/json'
+            }
+        }
